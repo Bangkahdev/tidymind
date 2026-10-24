@@ -287,10 +287,11 @@ def test_removed_source_is_rejected(run_cli: Run, fake_ollama: Any, downloads: P
 
 
 @pytest.mark.parametrize(
-    "target",
-    ["../escape.pdf", "../../escape.pdf", "/tmp/escape.pdf", "C:\\escape.pdf", "C:escape.pdf",
+        "target",
+    ["../escape.pdf", "../../escape.pdf", "/tmp/escape.pdf", "C:\\escape.pdf", "C:escape.pdf",  # noqa: S108
      "sub/escape.pdf", "sub\\escape.pdf", "evil\x00.pdf", "evil\n.pdf", "CON.pdf", "x.exe", ""],
 )  # fmt: skip
+
 def test_hostile_targets_are_skipped_and_nothing_escapes(
     run_cli: Run, fake_ollama: Any, downloads: Path, tmp_path: Path, target: str
 ) -> None:

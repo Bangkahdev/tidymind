@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import json
 from pathlib import Path
 
@@ -62,10 +63,9 @@ def test_unknown_categories_never_reach_execution(category: str, tmp_path_factor
 @FAST
 @given(text=st.text(max_size=400))
 def test_plan_parser_only_raises_controlled_errors(text: str) -> None:
-    try:
+    with contextlib.suppress(PlanFormatError):
         parse_plan(text)
-    except PlanFormatError:
-        pass
+
 
 
 @FAST
@@ -76,9 +76,9 @@ def test_plan_parser_only_raises_controlled_errors(text: str) -> None:
         max_leaves=12,
     )
 )
+
 def test_model_parser_only_raises_controlled_errors(value: object) -> None:
     for expected in (0, 1, 3):
-        try:
+        with contextlib.suppress(ModelResponseError):
             parse_suggestions(json.dumps(value), expected)
-        except ModelResponseError:
-            pass
+

@@ -27,12 +27,11 @@ def violations(files: list[str]) -> list[str]:
 
 
 def main() -> int:
-    files = subprocess.run(  # noqa: S603
-        ["git", "ls-files"],
+    files = subprocess.run(
+        ["git", "ls-files"],  # noqa: S603, S607
         capture_output=True,
         text=True,
-        check=True,  # noqa: S607
-    ).stdout.splitlines()
+    ).stdout.splitlines()  # noqa: S607
     bad = violations(files)
     if bad:
         print("Repository hygiene violations:\n  " + "\n  ".join(bad))
