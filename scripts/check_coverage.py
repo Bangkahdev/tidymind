@@ -22,7 +22,9 @@ def main(path: str = "coverage.json") -> int:
     files = json.loads(Path(path).read_text())["files"]
     failed = False
     for label, fragment, need_stmt, need_branch in GATES:
-        selected = [v["summary"] for k, v in files.items() if fragment is None or k.replace("\\", "/").endswith(fragment)]
+        selected = [
+            v["summary"] for k, v in files.items() if fragment is None or k.replace("\\", "/").endswith(fragment)
+        ]
         if not selected:
             print(f"FAIL {label}: no coverage data found")
             failed = True
@@ -31,7 +33,9 @@ def main(path: str = "coverage.json") -> int:
         branch = pct(sum(s["covered_branches"] for s in selected), sum(s["num_branches"] for s in selected))
         ok = stmt >= need_stmt and branch >= need_branch
         failed |= not ok
-        print(f"{'PASS' if ok else 'FAIL'} {label}: statements {stmt:.1f}% (>= {need_stmt}), branches {branch:.1f}% (>= {need_branch})")
+        print(
+            f"{'PASS' if ok else 'FAIL'} {label}: statements {stmt:.1f}% (>= {need_stmt}), branches {branch:.1f}% (>= {need_branch})"
+        )
     return 1 if failed else 0
 
 

@@ -37,9 +37,7 @@ def _renameat2_noreplace(source: bytes, destination: bytes) -> None:
         ]
         result = function(_AT_FDCWD, source, _AT_FDCWD, destination, _RENAME_NOREPLACE)
     elif platform.machine().lower() in ("x86_64", "amd64"):
-        result = libc.syscall(
-            _SYS_RENAMEAT2_X86_64, _AT_FDCWD, source, _AT_FDCWD, destination, _RENAME_NOREPLACE
-        )
+        result = libc.syscall(_SYS_RENAMEAT2_X86_64, _AT_FDCWD, source, _AT_FDCWD, destination, _RENAME_NOREPLACE)
     else:
         raise NoClobberUnsupportedError("renameat2 is not available on this system")
     if result != 0:
@@ -58,6 +56,4 @@ def no_clobber_rename(source: Path, destination: Path) -> None:
     elif sys.platform.startswith("linux"):
         _renameat2_noreplace(os.fsencode(source), os.fsencode(destination))
     else:
-        raise NoClobberUnsupportedError(
-            f"no-overwrite rename is not supported on platform '{sys.platform}'"
-        )
+        raise NoClobberUnsupportedError(f"no-overwrite rename is not supported on platform '{sys.platform}'")

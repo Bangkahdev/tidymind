@@ -39,9 +39,7 @@ def scan(directory: str | os.PathLike[str]) -> ScanResult:
         with os.scandir(root) as iterator:
             entries = sorted(iterator, key=lambda e: e.name)
     except OSError as exc:
-        raise ScanError(
-            f"Cannot read directory {os.fspath(directory)}: {exc.strerror or 'unknown error'}"
-        ) from None
+        raise ScanError(f"Cannot read directory {os.fspath(directory)}: {exc.strerror or 'unknown error'}") from None
 
     eligible: list[FileEntry] = []
     hidden = symlinks = directories = special = 0

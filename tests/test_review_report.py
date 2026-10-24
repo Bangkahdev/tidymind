@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from test_validator import make_item, plan_for
 
+from test_validator import make_item, plan_for
 from tidymind import reporter, reviewer
 from tidymind.executor import ItemOutcome, Status
 from tidymind.models import FileEntry, ScanResult

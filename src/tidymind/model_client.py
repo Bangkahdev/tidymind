@@ -144,9 +144,7 @@ def _http_transport(url: str, payload: dict[str, Any], timeout: float) -> dict[s
     except urllib.error.URLError as exc:
         if isinstance(exc.reason, TimeoutError):
             raise ModelUnavailableError("The request to Ollama timed out.") from None
-        raise ModelUnavailableError(
-            "Cannot reach Ollama. Is it running? Start it with: ollama serve"
-        ) from None
+        raise ModelUnavailableError("Cannot reach Ollama. Is it running? Start it with: ollama serve") from None
     except OSError:
         raise ModelUnavailableError("Cannot reach Ollama (connection error).") from None
     if len(body) > MAX_RESPONSE_BYTES:
@@ -179,10 +177,7 @@ class OllamaClient:
 
     def build_request(self, batch: Sequence[FileEntry]) -> dict[str, Any]:
         """Build the request body; exposes exactly which metadata leaves the app."""
-        files = [
-            {"id": i, "name": e.name, "extension": e.extension, "size_bytes": e.size}
-            for i, e in enumerate(batch)
-        ]
+        files = [{"id": i, "name": e.name, "extension": e.extension, "size_bytes": e.size} for i, e in enumerate(batch)]
         return {
             "model": self.model,
             "stream": False,

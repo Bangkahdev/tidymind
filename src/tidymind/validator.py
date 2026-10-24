@@ -19,9 +19,7 @@ from tidymind.models import CATEGORY_DIRS, Plan, PlanItem
 MAX_NAME_LENGTH = 255
 _INVALID_TARGET_CHARS = frozenset('<>:"/\\|?*')
 _WINDOWS_RESERVED = frozenset(
-    {"CON", "PRN", "AUX", "NUL"}
-    | {f"COM{n}" for n in range(1, 10)}
-    | {f"LPT{n}" for n in range(1, 10)}
+    {"CON", "PRN", "AUX", "NUL"} | {f"COM{n}" for n in range(1, 10)} | {f"LPT{n}" for n in range(1, 10)}
 )
 
 

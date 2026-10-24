@@ -8,6 +8,7 @@ from collections.abc import Callable, Iterator
 from pathlib import Path
 
 import pytest
+
 from fake_ollama import FakeOllama, Responder, default_responder
 
 SRC = Path(__file__).resolve().parents[1] / "src"

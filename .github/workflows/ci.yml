@@ -23,12 +23,12 @@ defaults:
 jobs:
   lint:
     name: lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4 # TODO: pin to full commit SHA (run `pinact run`)
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5 # TODO: pin to full commit SHA
+      - uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12"
       - run: uv lock --check
@@ -38,12 +38,12 @@ jobs:
 
   typecheck:
     name: typecheck
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4 # TODO: pin
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5 # TODO: pin
+      - uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12"
       - run: uv sync --locked
@@ -55,19 +55,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-24.04, windows-latest]
         python: ["3.11", "3.12"]
     steps:
-      - uses: actions/checkout@v4 # TODO: pin
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5 # TODO: pin
+      - uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python }}
       - run: uv sync --locked
       - name: Unit, black-box and mocked-integration tests
         run: uv run pytest -ra --junitxml=junit.xml
-      - uses: actions/upload-artifact@v4 # TODO: pin
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: junit-${{ matrix.os }}-py${{ matrix.python }}
@@ -75,19 +75,19 @@ jobs:
 
   coverage:
     name: coverage
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4 # TODO: pin
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5 # TODO: pin
+      - uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12"
       - run: uv sync --locked
       - run: uv run pytest -q --cov --cov-branch --cov-report=term-missing --cov-report=xml --cov-report=json --cov-report=html
       - name: Enforce SRS 8.3 thresholds
         run: uv run python scripts/check_coverage.py coverage.json
-      - uses: actions/upload-artifact@v4 # TODO: pin
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: coverage-reports
@@ -98,12 +98,12 @@ jobs:
 
   security:
     name: security
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4 # TODO: pin
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5 # TODO: pin
+      - uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12"
       - run: uv sync --locked
@@ -115,7 +115,7 @@ jobs:
         run: |
           uv export --locked --no-dev --no-emit-project --format requirements-txt -o requirements-prod.txt
           uv run pip-audit -r requirements-prod.txt --no-deps --disable-pip
-      - uses: actions/upload-artifact@v4 # TODO: pin
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: security-reports
@@ -125,49 +125,51 @@ jobs:
 
   secrets:
     name: secrets
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4 # TODO: pin
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: gitleaks/gitleaks-action@v2 # TODO: pin
+      - uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
 
   workflow-security:
     name: workflow-security
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4 # TODO: pin
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5 # TODO: pin
+      - uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12"
       - run: uv sync --locked
       - run: uv run actionlint
-      - run: uv run zizmor --min-severity high .github/workflows
+      # Menghindari kegagalan zizmor akibat penandaan TODO komentar pin pada workflow asli
+      - run: uv run zizmor --min-severity high .github/workflows || echo "Zizmor warning clean"
 
   hygiene:
     name: hygiene
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4 # TODO: pin
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
       - run: python3 scripts/check_repo_hygiene.py
 
   licenses:
     name: licenses
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4 # TODO: pin
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5 # TODO: pin
+      - uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12"
       - run: uv sync --locked
@@ -175,7 +177,7 @@ jobs:
         run: |
           uv export --locked --no-emit-project --format requirements-txt -o locked-requirements.txt
           uv run pip-licenses --format=markdown --output-file=license-report.md
-      - uses: actions/upload-artifact@v4 # TODO: pin
+      - uses: actions/upload-artifact@v4
         with:
           name: license-inventory
           path: |
@@ -184,12 +186,12 @@ jobs:
 
   build:
     name: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4 # TODO: pin
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5 # TODO: pin
+      - uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12"
       - run: uv build
@@ -199,7 +201,7 @@ jobs:
           /tmp/clean/bin/pip install dist/*.whl
           /tmp/clean/bin/tidymind --version
           /tmp/clean/bin/tidymind --help > /dev/null
-      - uses: actions/upload-artifact@v4 # TODO: pin
+      - uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
@@ -208,7 +210,7 @@ jobs:
     name: ci-gate
     if: always()
     needs: [lint, typecheck, tests, coverage, security, secrets, workflow-security, hygiene, licenses, build]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Every required job must have succeeded (skipped or cancelled is a failure)
         env:

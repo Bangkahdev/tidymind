@@ -34,12 +34,7 @@ class ScanResult:
 
     @property
     def excluded_total(self) -> int:
-        return (
-            self.excluded_hidden
-            + self.excluded_symlinks
-            + self.excluded_directories
-            + self.excluded_special
-        )
+        return self.excluded_hidden + self.excluded_symlinks + self.excluded_directories + self.excluded_special
 
     @property
     def discovered_total(self) -> int:
