@@ -5,8 +5,8 @@ import socket
 from typing import Any
 
 import pytest
-from fake_ollama import chat_reply, default_responder
 
+from fake_ollama import chat_reply, default_responder
 from tidymind import model_client
 from tidymind.errors import ConfigError, ModelResponseError, ModelUnavailableError
 from tidymind.model_client import OllamaClient, parse_suggestions, validate_endpoint
@@ -16,10 +16,7 @@ ENTRIES = [FileEntry("a.pdf", ".pdf", 10, 111), FileEntry("b.png", ".png", 20, 2
 
 
 def good(n: int = 2) -> str:
-    items = [
-        {"id": i, "category": "Documents", "target_name": f"n{i}.pdf", "reason": "r"}
-        for i in range(n)
-    ]
+    items = [{"id": i, "category": "Documents", "target_name": f"n{i}.pdf", "reason": "r"} for i in range(n)]
     return json.dumps({"suggestions": items})
 
 
@@ -212,7 +209,7 @@ def _closed_port() -> int:
 
 
 def test_http_connection_refused() -> None:
-    client = OllamaClient(endpoint=f"http://127.0.0.1:{_closed_port()}", timeout=2)
+    client = OllamaClient(endpoint=f"http://127.0.0.1:{_closed_port()}", timeout=10)
     with pytest.raises(ModelUnavailableError, match="Cannot reach Ollama"):
         client.suggest(ENTRIES)
 

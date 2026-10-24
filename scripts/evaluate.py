@@ -40,7 +40,11 @@ def main() -> int:
 
     correct = [s.category == r["expected_category"] for s, r in zip(suggestions, rows, strict=True)]
     renamed = [(r["name"], s.target_name) for s, r in zip(suggestions, rows, strict=True) if s.target_name != r["name"]]
-    unsafe = [(r["name"], s.target_name) for s, r in zip(suggestions, rows, strict=True) if target_name_problem(r["name"], s.target_name)]
+    unsafe = [
+        (r["name"], s.target_name)
+        for s, r in zip(suggestions, rows, strict=True)
+        if target_name_problem(r["name"], s.target_name)
+    ]
     print("# Category evaluation\n")
     print(f"- Files evaluated: {len(rows)}")
     print(f"- Correct categories: {sum(correct)} ({100 * sum(correct) / len(rows):.1f}%)")

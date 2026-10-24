@@ -13,8 +13,7 @@ from tidymind.textutil import safe_text
 def render_scan(scan: ScanResult) -> str:
     lines = [
         f"Root: {safe_text(str(scan.root))}",
-        f"Discovered: {scan.discovered_total}  Eligible: {len(scan.eligible)}  "
-        f"Excluded: {scan.excluded_total}",
+        f"Discovered: {scan.discovered_total}  Eligible: {len(scan.eligible)}  Excluded: {scan.excluded_total}",
         f"  excluded: hidden={scan.excluded_hidden} symlinks={scan.excluded_symlinks} "
         f"directories={scan.excluded_directories} special={scan.excluded_special}",
     ]
@@ -29,14 +28,12 @@ def count_outcomes(outcomes: Sequence[ItemOutcome]) -> Counter[Status]:
 def render_results(outcomes: Sequence[ItemOutcome]) -> str:
     counts = count_outcomes(outcomes)
     lines = [
-        f"Result: succeeded={counts[Status.SUCCEEDED]} skipped={counts[Status.SKIPPED]} "
-        f"failed={counts[Status.FAILED]}"
+        f"Result: succeeded={counts[Status.SUCCEEDED]} skipped={counts[Status.SKIPPED]} failed={counts[Status.FAILED]}"
     ]
     for outcome in outcomes:
         target = f" -> {safe_text(outcome.target)}" if outcome.target else ""
         lines.append(
-            f"  [{outcome.status.value.upper()}] {safe_text(outcome.source_name)}{target}"
-            f": {safe_text(outcome.detail)}"
+            f"  [{outcome.status.value.upper()}] {safe_text(outcome.source_name)}{target}: {safe_text(outcome.detail)}"
         )
     if counts[Status.SKIPPED] or counts[Status.FAILED]:
         lines.append(

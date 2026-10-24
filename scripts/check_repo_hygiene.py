@@ -28,7 +28,10 @@ def violations(files: list[str]) -> list[str]:
 
 def main() -> int:
     files = subprocess.run(  # noqa: S603
-        ["git", "ls-files"], capture_output=True, text=True, check=True  # noqa: S607
+        ["git", "ls-files"],
+        capture_output=True,
+        text=True,
+        check=True,  # noqa: S607
     ).stdout.splitlines()
     bad = violations(files)
     if bad:

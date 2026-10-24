@@ -12,6 +12,7 @@ from subprocess import CompletedProcess
 from typing import Any
 
 import pytest
+
 from conftest import snapshot
 from fake_ollama import chat_reply, default_responder
 
@@ -94,9 +95,7 @@ def test_plan_dry_run_changes_nothing(run_cli: Run, fake_ollama: Any, downloads:
     assert snapshot(downloads) == before and not out.exists()
 
 
-def test_plan_writes_file_and_never_overwrites(
-    run_cli: Run, fake_ollama: Any, downloads: Path, tmp_path: Path
-) -> None:
+def test_plan_writes_file_and_never_overwrites(run_cli: Run, fake_ollama: Any, downloads: Path, tmp_path: Path) -> None:
     server = fake_ollama()
     out = tmp_path / "plan.json"
     make_plan(run_cli, server, downloads, out)
@@ -164,9 +163,7 @@ def test_model_unavailable_is_safe(run_cli: Run, downloads: Path) -> None:
     "reply",
     [chat_reply("not json"), chat_reply(""), chat_reply('{"suggestions": []}'), {"message": 5}],
 )
-def test_malformed_model_output_fails_closed(
-    run_cli: Run, fake_ollama: Any, downloads: Path, reply: Any
-) -> None:
+def test_malformed_model_output_fails_closed(run_cli: Run, fake_ollama: Any, downloads: Path, reply: Any) -> None:
     server = fake_ollama(lambda r: (200, reply))
     before = snapshot(downloads)
     result = run_cli("plan", str(downloads), "--endpoint", server.url, "--output", str(downloads.parent / "p.json"))
@@ -337,9 +334,7 @@ def test_duplicate_targets_are_skipped(run_cli: Run, fake_ollama: Any, downloads
 
 
 @pytest.mark.skipif(not symlinks_ok, reason="POSIX symlinks")
-def test_symlink_source_is_never_followed(
-    run_cli: Run, fake_ollama: Any, downloads: Path, tmp_path: Path
-) -> None:
+def test_symlink_source_is_never_followed(run_cli: Run, fake_ollama: Any, downloads: Path, tmp_path: Path) -> None:
     outside = tmp_path / "outside.pdf"
     outside.write_bytes(b"outside data")
     out = tmp_path / "plan.json"
@@ -407,9 +402,7 @@ def test_matching_root_assertion_works(run_cli: Run, fake_ollama: Any, downloads
     assert result.returncode == 0
 
 
-def test_hostile_filenames_cannot_inject_terminal_escapes(
-    run_cli: Run, fake_ollama: Any, tmp_path: Path
-) -> None:
+def test_hostile_filenames_cannot_inject_terminal_escapes(run_cli: Run, fake_ollama: Any, tmp_path: Path) -> None:
     if sys.platform == "win32":
         pytest.skip("control characters are not valid in Windows file names")
     folder = tmp_path / "d"

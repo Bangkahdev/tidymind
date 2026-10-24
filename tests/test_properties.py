@@ -69,11 +69,13 @@ def test_plan_parser_only_raises_controlled_errors(text: str) -> None:
 
 
 @FAST
-@given(value=st.recursive(
-    st.none() | st.booleans() | st.integers() | st.text(max_size=20),
-    lambda c: st.lists(c, max_size=4) | st.dictionaries(st.text(max_size=8), c, max_size=4),
-    max_leaves=12,
-))
+@given(
+    value=st.recursive(
+        st.none() | st.booleans() | st.integers() | st.text(max_size=20),
+        lambda c: st.lists(c, max_size=4) | st.dictionaries(st.text(max_size=8), c, max_size=4),
+        max_leaves=12,
+    )
+)
 def test_model_parser_only_raises_controlled_errors(value: object) -> None:
     for expected in (0, 1, 3):
         try:

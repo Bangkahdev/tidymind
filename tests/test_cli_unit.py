@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from test_validator import make_item, plan_for
 
+from test_validator import make_item, plan_for
 from tidymind import cli
 from tidymind.errors import EXIT_CANCELLED, EXIT_INCOMPLETE, EXIT_INTERNAL, EXIT_OK
 from tidymind.planner import write_plan
@@ -51,9 +51,7 @@ def test_apply_declined_and_approved(tmp_path: Path) -> None:
 
 
 def test_apply_partial_failure_exit_code(tmp_path: Path) -> None:
-    root, plan = saved_plan(
-        tmp_path, lambda r: make_item(r, "a.pdf"), lambda r: make_item(r, "ghost.pdf")
-    )
+    root, plan = saved_plan(tmp_path, lambda r: make_item(r, "a.pdf"), lambda r: make_item(r, "ghost.pdf"))
     code, text = call("apply", str(plan), answer="y")
     assert code == EXIT_INCOMPLETE and "succeeded=1 skipped=1" in text
 

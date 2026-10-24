@@ -40,9 +40,7 @@ def execute(report: ValidationReport, mover: Mover = no_clobber_rename) -> tuple
     for result in report.results:
         item = result.item
         if not result.ok or result.destination is None:
-            outcomes.append(
-                ItemOutcome(item.source_name, None, Status.SKIPPED, result.reason or "unsafe")
-            )
+            outcomes.append(ItemOutcome(item.source_name, None, Status.SKIPPED, result.reason or "unsafe"))
             continue
         relative = f"{item.category}/{item.target_name}"
 

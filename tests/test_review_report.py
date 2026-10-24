@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from test_validator import make_item, plan_for
 
+from test_validator import make_item, plan_for
 from tidymind import reporter, reviewer
 from tidymind.executor import ItemOutcome, Status
 from tidymind.models import FileEntry, ScanResult
@@ -36,7 +36,7 @@ def test_eof_and_interrupt_are_not_approval() -> None:
 def test_prompt_states_count_and_root() -> None:
     seen: list[str] = []
     reviewer.confirm(3, Path("/some/root"), lambda p: seen.append(p) or "n")
-    assert "3 file(s)" in seen[0] and "/some/root" in seen[0]
+    assert "3 file(s)" in seen[0] and str(Path("/some/root")) in seen[0]
 
 
 def test_safe_text_escapes_terminal_tricks() -> None:

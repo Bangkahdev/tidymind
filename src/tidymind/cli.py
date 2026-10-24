@@ -59,9 +59,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_plan = sub.add_parser("plan", help="ask the local model for a plan and preview it")
     p_plan.add_argument("directory")
     p_plan.add_argument("--output", "-o", help="write the plan JSON here (never overwrites)")
-    p_plan.add_argument(
-        "--dry-run", action="store_true", help="preview only; do not write any file"
-    )
+    p_plan.add_argument("--dry-run", action="store_true", help="preview only; do not write any file")
     p_plan.add_argument("--model", default=DEFAULT_MODEL)
     p_plan.add_argument(
         "--endpoint",
@@ -106,9 +104,7 @@ def _cmd_plan(args: argparse.Namespace, out: Callable[[str], None]) -> int:
     return EXIT_OK
 
 
-def _cmd_apply(
-    args: argparse.Namespace, out: Callable[[str], None], ask: Callable[[str], str]
-) -> int:
+def _cmd_apply(args: argparse.Namespace, out: Callable[[str], None], ask: Callable[[str], str]) -> int:
     plan = load_plan(args.plan)
     expected = resolve_root(args.root) if args.root else None
     report = validate_plan(plan, expected)  # re-validate: a saved plan is never trusted
@@ -150,4 +146,3 @@ def main(
         if args.debug:
             traceback.print_exc()
         return EXIT_INTERNAL
-

@@ -113,9 +113,7 @@ class _FakeScandir:
         return None
 
 
-def test_windows_hidden_attribute_and_stat_errors(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
+def test_windows_hidden_attribute_and_stat_errors(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     hidden = SimpleNamespace(
         st_mode=stat.S_IFREG, st_file_attributes=stat.FILE_ATTRIBUTE_HIDDEN, st_size=1, st_mtime_ns=1
     )

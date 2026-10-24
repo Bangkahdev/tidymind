@@ -10,8 +10,8 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from conftest import snapshot
 
+from conftest import snapshot
 from tidymind.executor import Status, execute
 from tidymind.model_client import OllamaClient
 from tidymind.planner import build_plan, dump_plan, load_plan

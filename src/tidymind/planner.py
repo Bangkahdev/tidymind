@@ -33,10 +33,7 @@ _ITEM_FIELDS: dict[str, type] = {
 def build_plan(scan: ScanResult, suggestions: Sequence[Suggestion]) -> Plan:
     if len(suggestions) != len(scan.eligible):
         raise ValueError("One suggestion per eligible file is required.")
-    items = tuple(
-        _item(entry, suggestion)
-        for entry, suggestion in zip(scan.eligible, suggestions, strict=True)
-    )
+    items = tuple(_item(entry, suggestion) for entry, suggestion in zip(scan.eligible, suggestions, strict=True))
     return Plan(schema_version=SCHEMA_VERSION, root=str(scan.root), items=items)
 
 
@@ -96,9 +93,7 @@ def _is_int(value: object) -> bool:
 def parse_plan(text: str) -> Plan:
     """Strictly parse plan text. Any structural problem raises PlanFormatError."""
     try:
-        data = json.loads(
-            text, object_pairs_hook=_reject_duplicates, parse_constant=_reject_constant
-        )
+        data = json.loads(text, object_pairs_hook=_reject_duplicates, parse_constant=_reject_constant)
     except PlanFormatError:
         raise
     except ValueError:

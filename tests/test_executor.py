@@ -5,8 +5,8 @@ import sys
 from pathlib import Path
 
 import pytest
-from test_validator import make_item, plan_for
 
+from test_validator import make_item, plan_for
 from tidymind import executor
 from tidymind.errors import NoClobberUnsupportedError
 from tidymind.executor import Status, execute
@@ -44,9 +44,7 @@ def test_moves_and_renames_preserving_content(root: Path) -> None:
 
 def test_unsafe_items_never_reach_the_mover(root: Path) -> None:
     calls: list[object] = []
-    outcomes = run(
-        root, make_item(root, "a.pdf", target_name="../evil.pdf"), mover=lambda s, d: calls.append(d)
-    )
+    outcomes = run(root, make_item(root, "a.pdf", target_name="../evil.pdf"), mover=lambda s, d: calls.append(d))
     assert calls == []
     assert outcomes[0].status is Status.SKIPPED and outcomes[0].target is None
     assert not (root / "Documents").exists()  # no folder created for skipped items
@@ -107,9 +105,7 @@ def test_one_failure_does_not_stop_other_items(root: Path) -> None:
             raise OSError(5, "I/O error")
         os.rename(src, dst)
 
-    outcomes = run(
-        root, make_item(root, "a.pdf"), make_item(root, "b.png", category="Images"), mover=flaky
-    )
+    outcomes = run(root, make_item(root, "a.pdf"), make_item(root, "b.png", category="Images"), mover=flaky)
     assert [o.status for o in outcomes] == [Status.FAILED, Status.SUCCEEDED]
 
 
@@ -122,9 +118,7 @@ def test_mkdir_failure(root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     assert outcome.status is Status.FAILED and "category folder" in outcome.detail
 
 
-def test_category_folder_created_concurrently_is_fine(
-    root: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_category_folder_created_concurrently_is_fine(root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     real = os.mkdir
 
     def create_then_raise(path: object) -> None:
