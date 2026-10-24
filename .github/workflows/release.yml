@@ -1,0 +1,93 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  pinned-actions:
+    name: pinned-actions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 # TODO: pin
+        with:
+          persist-credentials: false
+      - name: Release workflows must use full commit SHAs
+        run: python3 scripts/check_actions_pinned.py
+
+  mutation:
+    name: mutation
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 # TODO: pin
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v5 # TODO: pin
+        with:
+          python-version: "3.12"
+      - run: uv sync --locked
+      - name: Mutation testing (validator and executor)
+        run: |
+          uv run mutmut run
+          uv run mutmut export-cicd-stats
+          uv run python scripts/check_mutation_score.py
+      - uses: actions/upload-artifact@v4 # TODO: pin
+        if: always()
+        with:
+          name: mutation-report
+          path: mutants/
+
+  publish:
+    name: publish
+    needs: [ci, pinned-actions, mutation]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # only to publish this repository's own release
+    steps:
+      - uses: actions/checkout@v4 # TODO: pin
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v5 # TODO: pin
+        with:
+          python-version: "3.12"
+      - run: uv build
+      - name: Clean-install smoke test
+        run: |
+          python3 -m venv /tmp/clean
+          /tmp/clean/bin/pip install dist/*.whl
+          /tmp/clean/bin/tidymind --version
+      - name: Checksums and SBOM
+        run: |
+          (cd dist && sha256sum * > SHA256SUMS)
+          uv export --locked --no-dev --no-emit-project --format cyclonedx1.5 -o sbom.cdx.json || echo "SBOM export unsupported by this uv version"
+      - name: Release notes (never claims what was not recorded)
+        run: |
+          {
+            echo "## Evidence boundaries"
+            echo "- Automated: unit, black-box, mocked integration, coverage, mutation, static analysis, security scans (see CI)."
+            if grep -q '^Result: PASS' docs/ACCEPTANCE.md; then
+              echo "- Real-model manual acceptance record: present (docs/ACCEPTANCE.md)."
+            else
+              echo "- Real-model manual acceptance record: NOT recorded for this release."
+            fi
+            echo "- Full offline operation is claimed only if docs/ACCEPTANCE.md records a network-disconnected run."
+          } > notes.md
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          files=(dist/* )
+          [ -f sbom.cdx.json ] && files+=(sbom.cdx.json)
+          gh release create "$TAG" "${files[@]}" --title "$TAG" --notes-file notes.md --verify-tag

@@ -1,0 +1,149 @@
+{
+  "description": "Synthetic evaluation set; expected categories recorded before inference.",
+  "files": [
+    {
+      "name": "invoice_oct.pdf",
+      "extension": ".pdf",
+      "size_bytes": 1000,
+      "expected_category": "Documents"
+    },
+    {
+      "name": "resume_final_v3.docx",
+      "extension": ".docx",
+      "size_bytes": 1137,
+      "expected_category": "Documents"
+    },
+    {
+      "name": "meeting notes.txt",
+      "extension": ".txt",
+      "size_bytes": 1274,
+      "expected_category": "Documents"
+    },
+    {
+      "name": "thesis_chapter2.pdf",
+      "extension": ".pdf",
+      "size_bytes": 1411,
+      "expected_category": "Documents"
+    },
+    {
+      "name": "lecture-slides.pdf",
+      "extension": ".pdf",
+      "size_bytes": 1548,
+      "expected_category": "Documents"
+    },
+    {
+      "name": "budget 2026.xlsx",
+      "extension": ".xlsx",
+      "size_bytes": 1685,
+      "expected_category": "Documents"
+    },
+    {
+      "name": "IMG_20260115_142233.jpg",
+      "extension": ".jpg",
+      "size_bytes": 1822,
+      "expected_category": "Images"
+    },
+    {
+      "name": "screenshot 2026-02-01.png",
+      "extension": ".png",
+      "size_bytes": 1959,
+      "expected_category": "Images"
+    },
+    {
+      "name": "logo_final.png",
+      "extension": ".png",
+      "size_bytes": 2096,
+      "expected_category": "Images"
+    },
+    {
+      "name": "holiday photo.jpeg",
+      "extension": ".jpeg",
+      "size_bytes": 2233,
+      "expected_category": "Images"
+    },
+    {
+      "name": "diagram.gif",
+      "extension": ".gif",
+      "size_bytes": 2370,
+      "expected_category": "Images"
+    },
+    {
+      "name": "project_backup.zip",
+      "extension": ".zip",
+      "size_bytes": 2507,
+      "expected_category": "Archives"
+    },
+    {
+      "name": "dataset.tar.gz",
+      "extension": ".gz",
+      "size_bytes": 2644,
+      "expected_category": "Archives"
+    },
+    {
+      "name": "photos_2025.7z",
+      "extension": ".7z",
+      "size_bytes": 2781,
+      "expected_category": "Archives"
+    },
+    {
+      "name": "old-files.rar",
+      "extension": ".rar",
+      "size_bytes": 2918,
+      "expected_category": "Archives"
+    },
+    {
+      "name": "python-3.12.0-amd64.exe",
+      "extension": ".exe",
+      "size_bytes": 3055,
+      "expected_category": "Installers"
+    },
+    {
+      "name": "vlc-setup.msi",
+      "extension": ".msi",
+      "size_bytes": 3192,
+      "expected_category": "Installers"
+    },
+    {
+      "name": "tool_1.4.2_amd64.deb",
+      "extension": ".deb",
+      "size_bytes": 3329,
+      "expected_category": "Installers"
+    },
+    {
+      "name": "app-installer.dmg",
+      "extension": ".dmg",
+      "size_bytes": 3466,
+      "expected_category": "Installers"
+    },
+    {
+      "name": "download",
+      "extension": "",
+      "size_bytes": 3603,
+      "expected_category": "Other"
+    },
+    {
+      "name": "untitled",
+      "extension": "",
+      "size_bytes": 3740,
+      "expected_category": "Other"
+    },
+    {
+      "name": "a1b2c3d4",
+      "extension": "",
+      "size_bytes": 3877,
+      "expected_category": "Other"
+    },
+    {
+      "name": "data.bin",
+      "extension": ".bin",
+      "size_bytes": 4014,
+      "expected_category": "Other"
+    },
+    {
+      "name": "random.xyz",
+      "extension": ".xyz",
+      "size_bytes": 4151,
+      "expected_category": "Other"
+    }
+  ]
+}

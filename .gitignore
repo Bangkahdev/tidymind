@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+coverage.xml
+htmlcov/
+mutants/
+dist/
+build/
+*.egg-info/
+# never commit model weights, local plans with personal metadata, or caches
+*.gguf
+*.safetensors
+*.bin
+plan*.json
+!tests/fixtures/*.json
+!eval/*.json
+.env
