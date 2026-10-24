@@ -88,10 +88,10 @@ def test_bad_source_names_are_unsafe(root: Path, source: str) -> None:
 
 
 def test_colon_in_source_allowed_off_windows_only(root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(validator, "_is_windows", lambda: False)
     assert validator.source_name_problem("10:30 notes.pdf") is None
     monkeypatch.setattr(validator, "_is_windows", lambda: True)
     assert validator.source_name_problem("10:30 notes.pdf") is not None
-
 
 def test_unknown_category_is_unsafe(root: Path) -> None:
     for category in ["Videos", "../Documents", "documents", ""]:

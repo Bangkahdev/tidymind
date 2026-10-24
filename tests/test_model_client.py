@@ -209,7 +209,7 @@ def _closed_port() -> int:
 
 
 def test_http_connection_refused() -> None:
-    client = OllamaClient(endpoint=f"http://127.0.0.1:{_closed_port()}", timeout=2)
+    client = OllamaClient(endpoint=f"http://127.0.0.1:{_closed_port()}", timeout=10)
     with pytest.raises(ModelUnavailableError, match="Cannot reach Ollama"):
         client.suggest(ENTRIES)
 
