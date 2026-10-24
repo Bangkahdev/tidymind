@@ -93,3 +93,11 @@ def test_syscall_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
     _patch(monkeypatch, _Libc(0, with_function=False), machine="aarch64")
     with pytest.raises(NoClobberUnsupportedError):
         fsops._renameat2_noreplace(b"s", b"d")
+
+@pytest.mark.skipif(sys.platform != "win32", reason="real Windows rename semantics")
+def test_windows_rename_never_overwrites(tmp_path: Path) -> None:
+    (tmp_path / "s").write_bytes(b"new")
+    (tmp_path / "d").write_bytes(b"precious")
+    with pytest.raises(FileExistsError):
+        fsops.no_clobber_rename(tmp_path / "s", tmp_path / "d")
+    assert (tmp_path / "d").read_bytes() == b"precious"
