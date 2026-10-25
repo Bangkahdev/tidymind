@@ -6,9 +6,12 @@ validates the proposal, shows you the complete plan, and moves files **only afte
 
 > The model is advisory. It cannot run commands, choose paths, delete files, or skip your approval.
 
-Implements [`docs/SRS-TidyMind.md`](docs/SRS-TidyMind.md) v1.1. Status: **MVP code and tests written;
-real-model acceptance, offline test, model evaluation, lockfile and CI runs are still pending**
-(see [Verification status](#verification-status)). Nothing here claims they have passed.
+Implements [`docs/SRS-TidyMind.md`](docs/SRS-TidyMind.md) v1.1. Status: **MVP implemented.**
+261 automated tests pass on Windows 11 and the CI workflow runs on Ubuntu and Windows
+(Python 3.11/3.12). A manual run with a real local model (`qwen3:4b`) and a 24-file category
+evaluation are recorded in [`docs/ACCEPTANCE.md`](docs/ACCEPTANCE.md) and
+[`docs/EVALUATION.md`](docs/EVALUATION.md). **Not done:** mutation testing, a network-disconnected
+test, macOS support. See [Verification status](#verification-status).
 
 ## Why open-weight / local
 
@@ -18,9 +21,9 @@ real-model acceptance, offline test, model evaluation, lockfile and CI runs are 
 
 ## Requirements
 
-- Python 3.11 or 3.12 (CI matrix: Ubuntu + Windows; macOS is **not** supported — no-overwrite rename is refused there).
-- [Ollama](https://ollama.com) running locally, and a model: `ollama pull qwen3:4b`
-  (initial candidate; confirm the exact tag, quantization and license before release).
+- Python 3.11 or 3.12 (CI matrix: Ubuntu + Windows; macOS is **not** supported: no-overwrite rename is refused there).
+- [Ollama](https://ollama.com) running locally, and a model: `ollama pull qwen3:4b`.
+  Tested with Ollama 0.40.11 and `qwen3:4b` (Q4_K_M, Apache 2.0 license as shown by `ollama show`).
 - No runtime Python dependencies (standard library only).
 
 ## Install and use
@@ -67,6 +70,10 @@ The plan schema is versioned (`schema_version: 1`) and contains **no destination
 ### Known limitations
 
 - Classification uses names/extensions only; suggestions are not proof of contents.
+- On a real model, `qwen3:4b` once returned a duplicate id on a four-file batch three times in a row, and the tool
+  failed closed with exit code 4 and no changes. Retries now vary the sampling after the first attempt; that fix
+  is covered by a unit test but has not been re-verified against the real model.
+- The model proposed no file renames in the evaluation set, so renaming is unproven.
 - No batch rollback: a multi-file run can partially complete (reported per item). Empty category folders may remain.
 - Size + mtime are change indicators, not proof of identity; metadata checks cannot remove all race conditions.
 - Approval is read from stdin (so scripted tests can pipe `y`); there is still no bypass flag.
@@ -76,11 +83,15 @@ The plan schema is versioned (`schema_version: 1`) and contains **no destination
 ```bash
 uv sync --locked
 uv run pytest                                  # unit + black-box + mocked integration
-uv run pytest --cov --cov-branch --cov-report=json && uv run python scripts/check_coverage.py
-uv run ruff format . && uv run ruff check --fix .   # run once before the first push: formatting was never checked
-uv run ruff check . && uv run ruff format --check . && uv run mypy --strict src/tidymind
+uv run pytest --cov --cov-branch --cov-report=json
+uv run python scripts/check_coverage.py        # SRS 8.3 thresholds
+uv run ruff format .
+uv run ruff check .
+uv run mypy --strict src/tidymind
 uv run bandit -r src --severity-level high
 ```
+
+(On Windows PowerShell 5.1, run these one per line; `&&` is not supported there.)
 
 Tests never need Ollama, a model download, network access, or personal files: black-box tests run the
 CLI in subprocesses against a deterministic fake Ollama HTTP server (`tests/fake_ollama.py`) and compare
@@ -97,16 +108,17 @@ Release (`v*.*.*` tags) additionally runs `pinned-actions` and `mutation`.
 
 | Evidence | Status |
 |---|---|
-| Unit, black-box, mocked-integration tests | Written; 265 cases ran green locally with a minimal pytest-compatible runner (real pytest, ruff, mypy were unavailable offline) — CI not yet run |
-| Coverage thresholds (SRS 8.3) | Gate script written; **not yet measured** |
-| Mutation score ≥ 80% (SRS 8.4) | Config + release gate written; **not yet run** |
-| Property-based tests | Written (Hypothesis); **not yet run** (Hypothesis unavailable where tests were written) |
-| Real-model acceptance ([`docs/ACCEPTANCE.md`](docs/ACCEPTANCE.md)) | **Not performed** |
-| Offline claim | **Not claimed** — requires the network-disconnected run |
-| Model category accuracy ([`docs/EVALUATION.md`](docs/EVALUATION.md)) | **Not evaluated** — no accuracy is claimed |
-| Windows behavior | Branch logic unit-tested with mocks; **Windows CI/manual run pending** |
-| Lockfile (`uv.lock`) | **Not generated** — run `uv lock` once and commit it |
-| Actions pinned to commit SHAs | **Not done** — run `pinact run`; release gate enforces it |
+| Unit, black-box, mocked-integration tests | 261 pass on Windows 11 (10 POSIX-only skipped); CI matrix on Ubuntu + Windows, Python 3.11/3.12 |
+| Coverage thresholds (SRS 8.3) | Enforced by the `coverage` CI job |
+| Property-based tests (Hypothesis) | Run in the test suite |
+| Static analysis, security scans | `ruff`, `mypy --strict`, `bandit`, `pip-audit`, secret scan, workflow lint run in CI |
+| Mutation score ≥ 80% (SRS 8.4) | **Not run** |
+| Real-model manual acceptance ([`docs/ACCEPTANCE.md`](docs/ACCEPTANCE.md)) | **Partial:** dry run, declined approval, conflicting target, changed source, approved apply (6 files) on Windows 11 with `qwen3:4b` |
+| Offline claim | **Not claimed:** no network-disconnected run |
+| Model category accuracy ([`docs/EVALUATION.md`](docs/EVALUATION.md)) | 23/24 on a small synthetic set; not an estimate for real folders |
+| Windows behavior | Automated and manual runs on Windows 11 |
+| Lockfile (`uv.lock`) | Committed; CI uses `--locked` |
+| Actions pinned to commit SHAs | Done (full SHAs) |
 
 ## License
 
