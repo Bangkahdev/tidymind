@@ -19,7 +19,7 @@ jobs:
     name: pinned-actions
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4 # TODO: pin
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
       - name: Release workflows must use full commit SHAs
@@ -30,19 +30,20 @@ jobs:
     needs: ci
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4 # TODO: pin
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5 # TODO: pin
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86
         with:
           python-version: "3.12"
+          enable-cache: false
       - run: uv sync --locked
       - name: Mutation testing (validator and executor)
         run: |
           uv run mutmut run
           uv run mutmut export-cicd-stats
           uv run python scripts/check_mutation_score.py
-      - uses: actions/upload-artifact@v4 # TODO: pin
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: mutation-report
@@ -55,12 +56,13 @@ jobs:
     permissions:
       contents: write # only to publish this repository's own release
     steps:
-      - uses: actions/checkout@v4 # TODO: pin
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5 # TODO: pin
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86
         with:
           python-version: "3.12"
+          enable-cache: false
       - run: uv build
       - name: Clean-install smoke test
         run: |
