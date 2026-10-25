@@ -25,12 +25,13 @@ jobs:
     name: lint
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86
         with:
           python-version: "3.12"
+          enable-cache: false
       - run: uv lock --check
       - run: uv sync --locked
       - run: uv run ruff check .
@@ -40,12 +41,13 @@ jobs:
     name: typecheck
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86
         with:
           python-version: "3.12"
+          enable-cache: false
       - run: uv sync --locked
       - run: uv run mypy --strict src/tidymind
 
@@ -58,16 +60,17 @@ jobs:
         os: [ubuntu-24.04, windows-latest]
         python: ["3.11", "3.12"]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86
         with:
           python-version: ${{ matrix.python }}
+          enable-cache: false
       - run: uv sync --locked
       - name: Unit, black-box and mocked-integration tests
         run: uv run pytest -ra --junitxml=junit.xml
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: junit-${{ matrix.os }}-py${{ matrix.python }}
@@ -77,17 +80,18 @@ jobs:
     name: coverage
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86
         with:
           python-version: "3.12"
+          enable-cache: false
       - run: uv sync --locked
       - run: uv run pytest -q --cov --cov-branch --cov-report=term-missing --cov-report=xml --cov-report=json --cov-report=html
       - name: Enforce SRS 8.3 thresholds
         run: uv run python scripts/check_coverage.py coverage.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: coverage-reports
@@ -100,12 +104,13 @@ jobs:
     name: security
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86
         with:
           python-version: "3.12"
+          enable-cache: false
       - run: uv sync --locked
       - name: Bandit (high severity fails; full report kept)
         run: |
@@ -115,7 +120,7 @@ jobs:
         run: |
           uv export --locked --no-dev --no-emit-project --format requirements-txt -o requirements-prod.txt
           uv run pip-audit -r requirements-prod.txt --no-deps --disable-pip
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: security-reports
@@ -129,11 +134,11 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: gitleaks/gitleaks-action@v3
+      - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
@@ -142,22 +147,22 @@ jobs:
     name: workflow-security
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86
         with:
           python-version: "3.12"
+          enable-cache: false
       - run: uv sync --locked
       - run: uv run actionlint
-      # Menambahkan flag passthrough agar penanda kosmetik tidak langsung mematikan CI
-      - run: uv run zizmor --min-severity high .github/workflows || exit 0
+      - run: uv run zizmor --min-severity high .github/workflows
 
   hygiene:
     name: hygiene
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
       - run: python3 scripts/check_repo_hygiene.py
@@ -166,18 +171,19 @@ jobs:
     name: licenses
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86
         with:
           python-version: "3.12"
+          enable-cache: false
       - run: uv sync --locked
       - name: Dependency and license inventory
         run: |
           uv export --locked --no-emit-project --format requirements-txt -o locked-requirements.txt
           uv run pip-licenses --format=markdown --output-file=license-report.md
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: license-inventory
           path: |
@@ -188,12 +194,13 @@ jobs:
     name: build
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86
         with:
           python-version: "3.12"
+          enable-cache: false
       - run: uv build
       - name: Install the wheel in a clean environment and smoke-test
         run: |
@@ -201,7 +208,7 @@ jobs:
           /tmp/clean/bin/pip install dist/*.whl
           /tmp/clean/bin/tidymind --version
           /tmp/clean/bin/tidymind --help > /dev/null
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: dist
           path: dist/
