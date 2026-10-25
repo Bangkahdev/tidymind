@@ -69,7 +69,7 @@ jobs:
           /tmp/clean/bin/tidymind --version
       - name: Checksums and SBOM
         run: |
-          (cd dist && sha256sum * > SHA256SUMS)
+          (cd dist && sha256sum ./* > SHA256SUMS)
           uv export --locked --no-dev --no-emit-project --format cyclonedx1.5 -o sbom.cdx.json || echo "SBOM export unsupported by this uv version"
       - name: Release notes (never claims what was not recorded)
         run: |
