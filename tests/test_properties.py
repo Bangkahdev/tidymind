@@ -67,7 +67,6 @@ def test_plan_parser_only_raises_controlled_errors(text: str) -> None:
         parse_plan(text)
 
 
-
 @FAST
 @given(
     value=st.recursive(
@@ -76,9 +75,7 @@ def test_plan_parser_only_raises_controlled_errors(text: str) -> None:
         max_leaves=12,
     )
 )
-
 def test_model_parser_only_raises_controlled_errors(value: object) -> None:
     for expected in (0, 1, 3):
         with contextlib.suppress(ModelResponseError):
             parse_suggestions(json.dumps(value), expected)
-
